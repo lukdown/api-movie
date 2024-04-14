@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="movie">
+
+	<!-- 사진 저장 -->
+	<insert id="posterInsert" parameterType="MovieVo">
+	      <![CDATA[
+	      	insert into movie_table
+			values(null, null, null, #{ filePath }, #{ orgName }, #{ saveName }, #{ fileSize }, null, null)
+	      ]]>
+	 </insert>
+
+ 
+ 	<!-- 포인트 수정 -->
+	<update id="update" parameterType="OrderVo">
+		<![CDATA[
+			UPDATE user_table
+			SET user_point = #{user_point}
+			WHERE user_hp = #{phoneNumber}
+		]]>
+	</update>
+ 
+ 	<insert id="order" parameterType="OrderItemVo">
+        <![CDATA[ 
+            insert into movie_purchase
+            values (null, #{m_r_no}, #{m_no}, #{m_s_no})
+        ]]>
+	</insert>
+ 
+
+	<!-- 메뉴 주문 -->
+	<insert id="insertRec" parameterType="OrderVo">
+		<![CDATA[	
+		insert into movie_receipt
+		values (null, null,
+				(select user_no from user_table
+				where user_hp = #{phoneNumber}),
+				now())
+		]]>
+		<selectKey keyProperty="m_r_no" resultType="int" order="AFTER">
+			<![CDATA[
+				select last_insert_id()
+			]]>
+		</selectKey>
+	</insert>
+ 
+	
+ 
+	<!-- 영수증 뽑아오기 -->
+	<select id="selectRec" parameterType="int" resultType="PointVo">
+		<![CDATA[	
+				select u.user_point,
+					   u.user_name,
+				       mr.m_r_no,
+				       mp.m_p_no,
+					   mt.m_no,
+				       mp.m_s_no,
+				       mt.m_name,
+				       mt.m_price
+				from movie_purchase mp
+				join movie_receipt mr on mp.m_r_no = mr.m_r_no
+				join screening_table st on mr.s_no = st.s_no
+				join movie_table mt on mt.m_no = mt.m_no
+				join user_table u on mr.user_no = u.user_no
+				where mp.m_r_no = #{m_r_no}
+		]]>
+	</select>
+
+  
+ 	<!-- 포인트 사용 조회 -->
+	<select id="usepoint" parameterType="PointVo" resultType="int">
+		<![CDATA[	
+			select user_point 
+			from user_table 
+			where user_hp= #{phoneNumber} and user_birth=#{birth}
+		]]>
+	</select>
+ 
+ 	<!-- 포인트 조회 -->
+	<select id="selectpoint" parameterType="string" resultType="int">
+		<![CDATA[	
+			select user_point 
+			from user_table 
+			where user_hp= #{phoneNumber}
+		]]>
+	</select>
+ 
+ 
+ 
+   <!-- 영화 포스터, 제목 리스트 -->
+   <select id="selectMovieList" resultType="MovieVo">
+      <![CDATA[ 
+        select  m_no,
+		        filePath,
+		        orgName,
+		        saveName,
+		        fileSize,
+		        m_name
+		from movie_table
+      ]]>
+   </select>
+   
+   
+   <!-- 영화 1개 데이터 가져오기 -->
+	<select id="selectTimeOneList" parameterType="int" resultType="MovieTimeVo">
+		<![CDATA[
+			select s.s_no, 
+				m.m_no,
+				s.s_date
+			from screening_table s
+			left join movie_table m on m.m_no=s.m_no
+			where m.m_no = #{m_no}
+		]]>
+	</select>
+   
+   <!-- 한개 영화 상영시간 리스트 -->
+   <select id="selectTimeList" resultType="MovieVo">
+      <![CDATA[ 
+        select  s.s_no,
+				m.m_no,
+				s.s_date
+		from screening_table s
+		left join movie_table m on m.m_no=s.m_no
+      ]]>
+   </select>
+   
+   <!-- 좌석 count -->
+   <select id="selectMovieCount" parameterType="MovieVo" resultType="MovieVo">
+      <![CDATA[ 
+        select  m.m_name,
+				count(*)
+		from screening_table s
+		left join movie_table m on m.m_no=s.m_no
+		where s.s_date = #{s_date} and m.m_no = #{m_no}
+		group by m.m_no having count(*)
+      ]]>
+   </select>
+   
+</mapper>

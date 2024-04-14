@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="MovieVo" type="com.javaex.vo.MovieVo" />
+		<typeAlias alias="FoodVo" type="com.javaex.vo.FoodVo" />
+		<typeAlias alias="MovieTimeVo" type="com.javaex.vo.MovieTimeVo" />
+		<typeAlias alias="PointVo" type="com.javaex.vo.PointVo" />
+		<typeAlias alias="OrderVo" type="com.javaex.vo.OrderVo" />
+		<typeAlias alias="OrderItemVo" type="com.javaex.vo.OrderItemVo" />
+		<typeAlias alias="UserVo" type="com.javaex.vo.UserVo" />
+	</typeAliases>
+	<mappers>
+		<mapper resource="mybatis/mappers/movie.xml" />
+		<mapper resource="mybatis/mappers/food.xml" />
+		<mapper resource="mybatis/mappers/user.xml" />
+	</mappers>
+</configuration>
